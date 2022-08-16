@@ -1,5 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
+const path  = require('path')
+
+const { mongoose } = require('./database');
+
 const app = express()
 
 //Settings
@@ -18,6 +22,10 @@ app.use(express.json())
 app.use('/api/tasks',require('./routes/task.routes'))
 
 //Static files
+//console.log( __dirname + '/public' ) --> Contiene la direccion del archivo js, hasta la ruta del sistema operativo
+
+//Este codigo me permite encontrar la carpeta public para mostrar el codigo html
+app.use(express.static (path.join(__dirname,'public') ))
 
 
 //Starting server
