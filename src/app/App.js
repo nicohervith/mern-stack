@@ -1,24 +1,27 @@
 import React, { Component } from "react";
 
-
 class App extends Component {
   constructor() {
     super();
     this.state = {
       title: "",
       description: "",
+      _id: "",
       tasks: [],
-      _id: " ",
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTask = this.addTask.bind(this);
   }
 
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value,
+    });
+  }
+
   addTask(e) {
     e.preventDefault();
-    //Para evitar que el navegador se refresque y poder ver el resultado
-
-    //Para enviar los datos
     if (this.state._id) {
       fetch(`/api/tasks/${this.state._id}`, {
         method: "PUT",
@@ -57,22 +60,6 @@ class App extends Component {
     }
   }
 
-  //Me muestra todos los datos del servidor utilizando el get de la funcion fetch
-  componentDidMount() {
-    this.fetchTasks();
-  }
-
-  fetchTasks() {
-    //Por defecto envia una peticion GET
-    fetch("/api/tasks")
-      .then((res) => res.json())
-      .then((data) => {
-        //console.log(data)
-        this.setState({ tasks: data });
-        console.log(this.state.tasks);
-      });
-  }
-
   deleteTask(id) {
     if (confirm("Are you sure you want to delete it?")) {
       fetch(`/api/tasks/${id}`, {
@@ -85,7 +72,7 @@ class App extends Component {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-           window.M.toast({ html: "Task deleted" });
+          M.toast({ html: "Task deleted" });
           this.fetchTasks();
         });
     }
@@ -95,6 +82,7 @@ class App extends Component {
     fetch(`/api/tasks/${id}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         this.setState({
           title: data.title,
           description: data.description,
@@ -103,24 +91,30 @@ class App extends Component {
       });
   }
 
-  handleChange(e) {
-    //Obtengo el valor de cada input
-    //Desde el e.target quiero el elemento y el valor
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-    });
+  componentDidMount() {
+    this.fetchTasks();
+  }
+
+  fetchTasks() {
+    fetch("/api/tasks")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ tasks: data });
+        console.log(this.state.tasks);
+      });
   }
 
   render() {
     return (
       <div>
-        {/* Navigation*/}
+        {/* NAVIGATION */}
         <nav className="light-blue darken-4">
           <div className="container">
-            <a className="brand-logo" href="/">
-              MERN STACK
-            </a>
+            <div className="nav-wrapper">
+              <a href="#" className="brand-logo">
+                MERN Stack
+              </a>
+            </div>
           </div>
         </nav>
 
@@ -135,9 +129,10 @@ class App extends Component {
                         <input
                           name="title"
                           onChange={this.handleChange}
-                          type="text"
-                          placeholder="title"
                           value={this.state.title}
+                          type="text"
+                          placeholder="Task Title"
+                          autoFocus
                         />
                       </div>
                     </div>
@@ -146,12 +141,15 @@ class App extends Component {
                         <textarea
                           name="description"
                           onChange={this.handleChange}
-                          className="materialize-textarea"
-                          placeholder="description"
                           value={this.state.description}
+                          cols="30"
+                          rows="10"
+                          placeholder="Task Description"
+                          className="materialize-textarea"
                         ></textarea>
                       </div>
                     </div>
+
                     <button type="submit" className="btn light-blue darken-4">
                       Send
                     </button>
@@ -159,9 +157,8 @@ class App extends Component {
                 </div>
               </div>
             </div>
-
             <div className="col s7">
-              <table className="">
+              <table>
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -176,15 +173,15 @@ class App extends Component {
                         <td>{task.description}</td>
                         <td>
                           <button
-                            className="btn light-blue darken-4"
                             onClick={() => this.deleteTask(task._id)}
+                            className="btn light-blue darken-4"
                           >
                             <i className="material-icons">delete</i>
                           </button>
                           <button
-                            className="btn light-blue darken-4"
-                            style={{ margin: "5px" }}
                             onClick={() => this.editTask(task._id)}
+                            className="btn light-blue darken-4"
+                            style={{ margin: "4px" }}
                           >
                             <i className="material-icons">edit</i>
                           </button>
